@@ -30,8 +30,6 @@ parser = argparse.ArgumentParser(formatter_class=argparse.RawDescriptionHelpForm
 parser.add_argument('--i', required=True,
                     help='NOTE: Remeber to quote your glob path.')
 parser.add_argument('--o', required=True)
-parser.add_argument('--rgbonly', action='store_true',
-                    help='Add this if use are preparing customer dataset')
 # Preprocessing related arguments
 parser.add_argument('--q_error', default=0.7, type=float)
 parser.add_argument('--refine_iter', default=3, type=int)
@@ -65,20 +63,8 @@ for i_path in paths:
 
     # Align images with VP
     i_img = rotatePanorama(img_ori / 255.0, vp[2::-1])
-    l_img = rotatePanorama(panoEdge.astype(np.float32), vp[2::-1])
 
     # Dump results
     basename = os.path.splitext(os.path.basename(i_path))[0]
-    if args.rgbonly:
-        path = os.path.join(args.o, '%s.png' % basename)
-        Image.fromarray((i_img * 255).astype(np.uint8)).save(path)
-    else:
-        path_VP = os.path.join(args.o, '%s_VP.txt' % basename)
-        path_i_img = os.path.join(args.o, '%s_aligned_rgb.png' % basename)
-        path_l_img = os.path.join(args.o, '%s_aligned_line.png' % basename)
-
-        with open(path_VP, 'w') as f:
-            for i in range(3):
-                f.write('%.6f %.6f %.6f\n' % (vp[i, 0], vp[i, 1], vp[i, 2]))
-        Image.fromarray((i_img * 255).astype(np.uint8)).save(path_i_img)
-        Image.fromarray((l_img * 255).astype(np.uint8)).save(path_l_img)
+    path = os.path.join(args.o, '%s.jpg' % basename)
+    Image.fromarray((i_img * 255).astype(np.uint8)).save(path)
